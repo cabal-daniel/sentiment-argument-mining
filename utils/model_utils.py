@@ -11,6 +11,7 @@ from tensorflow.keras.callbacks import LearningRateScheduler
 from tensorflow.keras.layers import Dense, Activation
 from tensorflow.keras.layers import Conv1D, LSTM, TimeDistributed, Input
 from sklearn.metrics import classification_report
+from official.utils.misc import tpu_lib
 
 
 def class_acc(label_threshold_less):
@@ -80,7 +81,7 @@ def fetch_bert_layer():
         l_bert (bert.model.BertModelLayer): BERT layer
         model_ckpt (str): path to best model checkpoint
     """
-    model_name = "albert_base_v2"
+    model_name = "albert_xxlarge_v2"
     model_dir = bert.fetch_google_albert_model(model_name, ".models")
     model_ckpt = os.path.join(model_dir, "model.ckpt-best")
     model_params = bert.albert_params(model_dir)
@@ -126,6 +127,11 @@ def learning_rate_scheduler(max_learn_rate, end_learn_rate, warmup_epoch_count,
         return float(res)
 
     return LearningRateScheduler(lr_scheduler, verbose=1)
+
+def get_strategy(tpu_address='tpu-quickstart'):
+    # When tpu_address is an empty string, we communicate with local TPUs.
+    cluster_resolver = tpu_lib.tpu_initialize(tpu_address)
+    return tf.distribute.experimental.TPUStrategy(cluster_resolver)
 
 
 def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
@@ -176,12 +182,14 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         output = TimeDistributed(Dense(64))(output)
         output = Activation("relu")(output)
         output = TimeDistributed(Dense(num_labels))(output)
+    strategy = get_strategy()
     prob = Activation("softmax")(output)
-    model = tf.keras.Model(inputs=input_ids, outputs=prob)
-    model.build(input_shape=(None, max_seq_len))
-    bert.load_albert_weights(l_bert, model_ckpt)
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                  metrics=[class_acc(label_threshold_less)])
+    with strategy.scope():
+        model = tf.keras.Model(inputs=input_ids, outputs=prob)
+        model.build(input_shape=(None, max_seq_len))
+        bert.load_albert_weights(l_bert, model_ckpt)
+        model.compile(optimizer=tf.keras.optimizers.Adam(),
+                      loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                      metrics=[class_acc(label_threshold_less)])
     model.summary()
     return model
