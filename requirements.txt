@@ -42,8 +42,9 @@ seaborn==0.10.0; python_version >= "3.6"
 sentencepiece==0.1.85
 six==1.14.0; python_full_version >= "3.6.1" and python_version >= "3.6"
 tensorboard==2.0.2; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.2.0"
-tensorflow-estimator==2.0.1
-tensorflow-gpu==2.0.3
+tensorflow-estimator
+tensorflow==2.4.1
+tf-models-official
 termcolor==1.1.0
 textblob==0.15.3
 tqdm==4.43.0; (python_version >= "2.6" and python_full_version < "3.0.0") or (python_full_version >= "3.2.0")
