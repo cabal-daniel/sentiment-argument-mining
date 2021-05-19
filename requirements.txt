@@ -52,3 +52,4 @@ urllib3==1.25.8; python_version >= "2.7" and python_full_version < "3.0.0" or py
 vadersentiment==3.3.1
 werkzeug==1.0.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
 wrapt==1.12.1
+cloud-tpu-client
