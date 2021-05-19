@@ -187,7 +187,7 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model = tf.keras.Model(inputs=input_ids, outputs=prob)
         model.build(input_shape=(None, max_seq_len))
         checkpoint = tf.train.Checkpoint(model=model)
-        checkpoint.restore('gs://sentargcdd/model/bert_model.ckpt').assert_existing_objects_matched()
+        checkpoint.restore(location).assert_existing_objects_matched()
 
         # bert.load_albert_weights(l_bert, model_ckpt)
         model.compile(optimizer=tf.keras.optimizers.Adam(),
