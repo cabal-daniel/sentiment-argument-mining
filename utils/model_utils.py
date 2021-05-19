@@ -72,20 +72,9 @@ def class_report(y_true, y_pred, greater_than_equal=3):
     return classification_report(y_true, y_pred, output_dict=True)
 
 
-def fetch_bert_layer():
-    """
-    Function to return ALBERT layer and weights
 
-    Returns:
-        l_bert (bert.model.BertModelLayer): BERT layer
-        model_ckpt (str): path to best model checkpoint
-    """
-    model_name = "albert_xxlarge_v2"
-    model_dir = bert.fetch_google_albert_model(model_name, ".models")
-    model_ckpt = os.path.join(model_dir, "model.ckpt-best")
-    model_params = bert.albert_params(model_dir)
-    l_bert = bert.BertModelLayer.from_params(model_params, name="albert")
-    return l_bert, model_ckpt
+def fetch_bert_layer():
+    return None, None
 
 
 def learning_rate_scheduler(max_learn_rate, end_learn_rate, warmup_epoch_count,
@@ -156,6 +145,12 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model (tensorflow.python.keras.engine.training.Model): final compiled
         model which can be used for fine-tuning
     """
+    config_dir = 'gs://sentargcdd/models2'
+    location = config_dir + '/model.ckpt-best'
+
+    model_params = bert.albert_params(config_dir)
+    l_bert = bert.BertModelLayer.from_params(model_params, name="albert")
+
     strategy = get_strategy()
     with strategy.scope():
         input_ids = Input(shape=(max_seq_len, ), dtype='int32')
@@ -192,7 +187,7 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model = tf.keras.Model(inputs=input_ids, outputs=prob)
         model.build(input_shape=(None, max_seq_len))
         checkpoint = tf.train.Checkpoint(model=model)
-        checkpoint.restore('gs://sentargcdd/model/bert_model.ckpt')# .assert_existing_objects_matched()
+        checkpoint.restore('gs://sentargcdd/model/bert_model.ckpt').assert_existing_objects_matched()
 
         # bert.load_albert_weights(l_bert, model_ckpt)
         model.compile(optimizer=tf.keras.optimizers.Adam(),
