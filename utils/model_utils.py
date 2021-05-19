@@ -11,7 +11,6 @@ from tensorflow.keras.callbacks import LearningRateScheduler
 from tensorflow.keras.layers import Dense, Activation
 from tensorflow.keras.layers import Conv1D, LSTM, TimeDistributed, Input
 from sklearn.metrics import classification_report
-from official.utils.misc import tpu_lib
 
 
 def class_acc(label_threshold_less):
@@ -130,7 +129,11 @@ def learning_rate_scheduler(max_learn_rate, end_learn_rate, warmup_epoch_count,
 
 def get_strategy(tpu_address='tpu-quickstart'):
     # When tpu_address is an empty string, we communicate with local TPUs.
-    cluster_resolver = tpu_lib.tpu_initialize(tpu_address)
+    cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
+        tpu=tpu_address
+    )
+    tf.config.experimental_connect_to_cluster(cluster_resolver)
+    tf.tpu.experimental.initialize_tpu_system(cluster_resolver)
     return tf.distribute.experimental.TPUStrategy(cluster_resolver)
 
 
