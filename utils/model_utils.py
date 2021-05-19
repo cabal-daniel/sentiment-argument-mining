@@ -194,7 +194,7 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         checkpoint = tf.train.Checkpoint(model=model)
         checkpoint.restore('gs://sentargcdd/model/bert_model.ckpt')# .assert_existing_objects_matched()
 
-        bert.load_albert_weights(l_bert, model_ckpt)
+        # bert.load_albert_weights(l_bert, model_ckpt)
         model.compile(optimizer=tf.keras.optimizers.Adam(),
                       loss=tf.keras.losses.SparseCategoricalCrossentropy(),
                       metrics=[class_acc(label_threshold_less)])

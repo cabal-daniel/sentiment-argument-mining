@@ -262,8 +262,8 @@ def grid_train(max_seq_length=512,
                 LRScheduler,
                 EarlyStopping(monitor="val_loss",
                               mode="min",
-                              patience=patience,
-                              restore_best_weights=True),
+                              patience=5,
+                              restore_best_weights=False),
                 # ModelCheckpoint(monitor="val_loss",
                 #                 mode="min",
                 #                 filepath=log_dir + "model_" + str(i) + ".h5",
@@ -274,8 +274,8 @@ def grid_train(max_seq_length=512,
                     monitor='val_loss',
                     mode='max',
                     verbose=1,
-                    save_freq=1,       
-                    save_best_only=True
+                    save_freq=56 * 5,       
+                    save_best_only=False,
                 ),
                 CSVLogger(filename=log_dir + "model_history_" + str(i) +
                           ".csv")
@@ -311,23 +311,39 @@ def grid_train(max_seq_length=512,
                 "test_f1_C": str(test_out_dict["4"]["f1-score"]),
                 "test_f1_P": str(test_out_dict["5"]["f1-score"])
             })
+        print({
+            "id": str(i),
+            "max_seq_length": str(max_seq_length),
+            "model_type": model_type,
+            "max_epochs": str(max_epochs),
+            "train_epochs": str(train_epochs),
+            "batch_size": str(batch_size),
+            "warmup_epoch_count": str(warmup_epoch_count),
+            "max_learn_rate": str(max_learn_rate),
+            "end_learn_rate": str(end_learn_rate),
+            "train_f1": str(train_f1),
+            "test_f1": str(test_f1),
+            "test_f1_N": str(test_out_dict["3"]["f1-score"]),
+            "test_f1_C": str(test_out_dict["4"]["f1-score"]),
+            "test_f1_P": str(test_out_dict["5"]["f1-score"])
+        })
         # clear memory
         del model
         # filter out best model and history
-        best_test = test_f1
-        if best_test >= record_test:
-            record_test = best_test
-            todel = [
-                el for el in glob(log_dir + "*")
-                if ('_' + str(i) + '.') not in el
-            ]
-            if len(todel) > 0:
-                for el in todel:
-                    if "log.csv" not in el:
-                        os.remove(el)
-        else:
-            os.remove(log_dir + "model_history_" + str(i) + ".csv")
-            os.remove(log_dir + "model_" + str(i) + ".h5")
+        # best_test = test_f1
+        # if best_test >= record_test:
+        #     record_test = best_test
+        #     todel = [
+        #         el for el in glob(log_dir + "*")
+        #         if ('_' + str(i) + '.') not in el
+        #     ]
+        #     if len(todel) > 0:
+        #         for el in todel:
+        #             if "log.csv" not in el:
+        #                 os.remove(el)
+        # else:
+        #     os.remove(log_dir + "model_history_" + str(i) + ".csv")
+        #     os.remove(log_dir + "model_" + str(i) + ".h5")
 
 
 if __name__ == "__main__":
