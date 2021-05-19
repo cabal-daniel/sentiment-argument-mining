@@ -156,6 +156,7 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model (tensorflow.python.keras.engine.training.Model): final compiled
         model which can be used for fine-tuning
     """
+    strategy = get_strategy()
     with strategy.scope():
         input_ids = Input(shape=(max_seq_len, ), dtype='int32')
         output = l_bert(input_ids)
@@ -186,12 +187,12 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
             output = TimeDistributed(Dense(64))(output)
             output = Activation("relu")(output)
             output = TimeDistributed(Dense(num_labels))(output)
-        strategy = get_strategy()
+        
         prob = Activation("softmax")(output)
         model = tf.keras.Model(inputs=input_ids, outputs=prob)
         model.build(input_shape=(None, max_seq_len))
         checkpoint = tf.train.Checkpoint(model=model)
-        checkpoint.restore('.models/albert_xxlarge_v2/albert_xxlarge/model.ckpt-best').assert_existing_objects_matched()
+        checkpoint.restore('gs://sentargcdd/model/bert_model.ckpt')# .assert_existing_objects_matched()
 
         bert.load_albert_weights(l_bert, model_ckpt)
         model.compile(optimizer=tf.keras.optimizers.Adam(),

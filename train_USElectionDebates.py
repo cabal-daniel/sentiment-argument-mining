@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 from glob import glob
 from sklearn.model_selection import ParameterGrid
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger, ModelCheckpoint
 from utils.model_utils import *
 from utils.arg_metav_formatter import *
 from pre_process_USElectionDebates import *
@@ -250,6 +250,14 @@ def grid_train(max_seq_length=512,
             warmup_epoch_count=warmup_epoch_count,
             total_epoch_count=max_epochs)
         # train model
+        checkpoint_manager = tf.train.CheckpointManager(
+            checkpoint,
+            directory=model_dir,
+            max_to_keep=None,
+            step_counter=optimizer.iterations,
+            checkpoint_interval=0)
+        checkpoint_callback = keras_utils.SimpleCheckpoint(checkpoint_manager)
+
         history = model.fit(
             x=train_X,
             y=train_Y,
@@ -263,10 +271,19 @@ def grid_train(max_seq_length=512,
                               mode="min",
                               patience=patience,
                               restore_best_weights=True),
-                ModelCheckpoint(monitor="val_loss",
-                                mode="min",
-                                filepath=log_dir + "model_" + str(i) + ".h5",
-                                save_best_only=True),
+                # ModelCheckpoint(monitor="val_loss",
+                #                 mode="min",
+                #                 filepath=log_dir + "model_" + str(i) + ".h5",
+                #                 save_best_only=True),
+                ModelCheckpoint(
+                    filepath='gs://sentargcdd/trained',
+                    save_weights_only=False,
+                    monitor='val_loss',
+                    mode='max',
+                    verbose=1,
+                    save_freq=1,       
+                    save_best_only=True
+                ),
                 CSVLogger(filename=log_dir + "model_history_" + str(i) +
                           ".csv")
             ])
