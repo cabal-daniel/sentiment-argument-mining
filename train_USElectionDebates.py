@@ -250,13 +250,6 @@ def grid_train(max_seq_length=512,
             warmup_epoch_count=warmup_epoch_count,
             total_epoch_count=max_epochs)
         # train model
-        checkpoint_manager = tf.train.CheckpointManager(
-            checkpoint,
-            directory=model_dir,
-            max_to_keep=None,
-            step_counter=optimizer.iterations,
-            checkpoint_interval=0)
-        checkpoint_callback = keras_utils.SimpleCheckpoint(checkpoint_manager)
 
         history = model.fit(
             x=train_X,
