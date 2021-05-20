@@ -161,7 +161,7 @@ def single_train(max_seq_length=512,
                             #                 filepath=log_dir + "model_" + str(i) + ".h5",
                             #                 save_best_only=True),
                             ModelCheckpoint(
-                                filepath='gs://sentargcdd/trained_single_3',
+                                filepath='gs://sentargcdd/trained_single_experiment',
                                 save_weights_only=False,
                                 monitor='val_loss',
                                 mode='min',

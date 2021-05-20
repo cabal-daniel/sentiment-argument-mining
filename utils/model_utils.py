@@ -145,8 +145,8 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model (tensorflow.python.keras.engine.training.Model): final compiled
         model which can be used for fine-tuning
     """
-    config_dir = 'gs://sentargcdd/model'
-    location = config_dir + '/bert_model.ckpt-best'
+    config_dir = 'gs://sentargcdd/models2'
+    location = config_dir + '/model.ckpt-best'
 
     model_params = bert.albert_params(config_dir)
     l_bert = bert.BertModelLayer.from_params(model_params, name="albert")
@@ -186,9 +186,9 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         prob = Activation("softmax")(output)
         model = tf.keras.Model(inputs=input_ids, outputs=prob)
         model.build(input_shape=(None, max_seq_len))
-        # tf.train.load_checkpoint(location)
-        checkpoint = tf.train.Checkpoint(model=model)
-        result = checkpoint.restore(location)
+        tf.train.load_checkpoint(location)
+        # checkpoint = tf.train.Checkpoint(model=model)
+        # result = checkpoint.restore(location)
         # result.assert_existing_objects_matched()
 
         # bert.load_albert_weights(l_bert, model_ckpt)
