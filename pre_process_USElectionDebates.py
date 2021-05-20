@@ -470,7 +470,7 @@ def corpus2tokenids_US(max_seq_length=512,
     ]
     collection = [[i, sent_set] for i, sent_set in enumerate(collection)]
     # split data into train and test sets
-    train, test = train_test_split(collection, test_size=0.33, random_state=42)
+    train, test = train_test_split(collection, test_size=0.15, random_state=42)
     train = post_process(train)
     test = post_process(test)
     logger.info("Projecting train text to indices")
