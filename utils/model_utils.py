@@ -186,9 +186,9 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         prob = Activation("softmax")(output)
         model = tf.keras.Model(inputs=input_ids, outputs=prob)
         model.build(input_shape=(None, max_seq_len))
-        tf.train.load_checkpoint(location)
-        # checkpoint = tf.train.Checkpoint(model=model)
-        # result = checkpoint.restore(location)
+        # tf.train.load_checkpoint(location)
+        checkpoint = tf.train.Checkpoint(model=model)
+        result = checkpoint.restore(location)
         # result.assert_existing_objects_matched()
 
         # bert.load_albert_weights(l_bert, model_ckpt)
