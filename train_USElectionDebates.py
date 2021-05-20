@@ -71,9 +71,9 @@ def mean_labels(input_dict):
         (float): macro-F1 score
     """
     sum_f1 = (float(input_dict["3"]["f1-score"]) +
-              float(input_dict["4"]["f1-score"]) +
-              float(input_dict["5"]["f1-score"]))
-    return sum_f1 / 3
+              float(input_dict["4"]["f1-score"]))
+              # float(input_dict["5"]["f1-score"]))
+    return sum_f1 / 2
 
 
 def single_train(max_seq_length=512,
@@ -161,12 +161,12 @@ def single_train(max_seq_length=512,
                             #                 filepath=log_dir + "model_" + str(i) + ".h5",
                             #                 save_best_only=True),
                             ModelCheckpoint(
-                                filepath='gs://sentargcdd/trained_single_experiment',
+                                filepath='gs://sentargcdd/trained_single_experiment_2',
                                 save_weights_only=False,
                                 monitor='val_loss',
                                 mode='min',
                                 verbose=1,
-                                save_freq=56 * patience,
+                                save_freq=119 * patience,
                                 save_best_only=False,
                             ),
                         ])
@@ -182,6 +182,8 @@ def single_train(max_seq_length=512,
     y_pred = np.argmax(y_pred, axis=-1)
     test_out_dict = class_report(test_Y, y_pred, label_threshold_less)
     test_f1 = mean_labels(test_out_dict)
+    print(test_out_dict)
+    print(train_out_dict)
     # write to log file
     with open(log_dir + "log.csv", "a") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -199,7 +201,7 @@ def single_train(max_seq_length=512,
             "test_f1": str(test_f1),
             "test_f1_N": str(test_out_dict["3"]["f1-score"]),
             "test_f1_C": str(test_out_dict["4"]["f1-score"]),
-            "test_f1_P": str(test_out_dict["5"]["f1-score"])
+            # "test_f1_P": str(test_out_dict["5"]["f1-score"])
         })
 
 
