@@ -135,6 +135,7 @@ def single_train(max_seq_length=512,
         warmup_epoch_count=warmup_epoch_count,
         total_epoch_count=max_epochs)
     # train model
+    log_dir = 'gs://sentargcdd/train_0521'
     history = model.fit(x=train_X,
                         y=train_Y,
                         validation_split=0.15,
