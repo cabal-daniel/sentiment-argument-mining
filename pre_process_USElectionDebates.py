@@ -304,7 +304,7 @@ def initialize_bert_tokenizer():
     Returns:
         Tokenizer (bert.tokenization.albert_tokenization.FullTokenizer)
     """
-    model_name = "albert_xxlarge_v2"
+    model_name = "albert_large_v2"
     model_dir = bert.fetch_google_albert_model(model_name, ".models")
     spm = os.path.join(model_dir, "30k-clean.model")
     vocab = os.path.join(model_dir, "30k-clean.vocab")
@@ -417,7 +417,7 @@ def corpus2tokenids_US(max_seq_length=512,
         test_Y (np.ndarray): testing data labels
         label_map (dict): mapping from label to integer ID for labels
     """
-    label_map = {"<pad>": 0, "[CLS]": 1, "[SEP]": 2, "N": 3, "C": 4, "P": 4}
+    label_map = {"<pad>": 0, "[CLS]": 1, "[SEP]": 2, "N": 3, "C": 4, "P": 5}
     corpus = read_us_election_corpus()
     tagged = char_tag(corpus, spaces=True)
     indices, flat_text = flatten(corpus[0], indices=True)

@@ -71,9 +71,9 @@ def mean_labels(input_dict):
         (float): macro-F1 score
     """
     sum_f1 = (float(input_dict["3"]["f1-score"]) +
-              float(input_dict["4"]["f1-score"]))
-              # float(input_dict["5"]["f1-score"]))
-    return sum_f1 / 2
+              float(input_dict["4"]["f1-score"]) +
+              float(input_dict["5"]["f1-score"]))
+    return sum_f1 / 3
 
 
 def single_train(max_seq_length=512,
@@ -143,32 +143,32 @@ def single_train(max_seq_length=512,
                         epochs=max_epochs,
                         callbacks=[
                             LRScheduler,
-                            # EarlyStopping(monitor="val_loss",
-                            #               mode="min",
-                            #               patience=patience,
-                            #               restore_best_weights=True),
-                            # ModelCheckpoint(monitor="val_loss",
-                            #                 mode="min",
-                            #                 filepath=log_dir + "model_0.h5",
-                            #                 save_best_only=True),
-                            # CSVLogger(filename=log_dir + "model_history_0.csv")
                             EarlyStopping(monitor="val_loss",
                                           mode="min",
                                           patience=patience,
-                                          restore_best_weights=False),
+                                          restore_best_weights=True),
+                            ModelCheckpoint(monitor="val_loss",
+                                            mode="min",
+                                            filepath=log_dir + "model_0.h5",
+                                            save_best_only=True),
+                            CSVLogger(filename=log_dir + "model_history_0.csv")
+                            # EarlyStopping(monitor="val_loss",
+                            #               mode="min",
+                            #               patience=patience,
+                            #               restore_best_weights=False),
                             # ModelCheckpoint(monitor="val_loss",
                             #                 mode="min",
                             #                 filepath=log_dir + "model_" + str(i) + ".h5",
                             #                 save_best_only=True),
-                            ModelCheckpoint(
-                                filepath='gs://sentargcdd/trained_single_experiment_2',
-                                save_weights_only=False,
-                                monitor='val_loss',
-                                mode='min',
-                                verbose=1,
-                                save_freq=119 * patience,
-                                save_best_only=False,
-                            ),
+                            # ModelCheckpoint(
+                            #     filepath='gs://sentargcdd/trained_single_experiment_2',
+                            #     save_weights_only=False,
+                            #     monitor='val_loss',
+                            #     mode='min',
+                            #     verbose=1,
+                            #     save_freq=119 * patience,
+                            #     save_best_only=False,
+                            # ),
                         ])
     # find actual trained epochs
     train_epochs = len(history.history["val_loss"])
@@ -201,7 +201,7 @@ def single_train(max_seq_length=512,
             "test_f1": str(test_f1),
             "test_f1_N": str(test_out_dict["3"]["f1-score"]),
             "test_f1_C": str(test_out_dict["4"]["f1-score"]),
-            # "test_f1_P": str(test_out_dict["5"]["f1-score"])
+            "test_f1_P": str(test_out_dict["5"]["f1-score"])
         })
 
 
