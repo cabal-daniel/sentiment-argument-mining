@@ -128,7 +128,7 @@ def learning_rate_scheduler(max_learn_rate, end_learn_rate, warmup_epoch_count,
 
     return LearningRateScheduler(lr_scheduler, verbose=1)
 
-def get_strategy(tpu_address='tpu-quickstart'):
+def get_strategy(tpu_address='mnist-tutorial'):
     # When tpu_address is an empty string, we communicate with local TPUs.
     cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
         tpu=tpu_address
