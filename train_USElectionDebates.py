@@ -166,9 +166,9 @@ def single_train(max_seq_length=512,
                                 save_weights_only=False,
                                 monitor='val_loss',
                                 mode='min',
-                                verbose=1,
-                                save_freq=56 * 5,       
-                                save_best_only=False,
+                                # verbose=1,
+                                # save_freq=56 * 5,       
+                                save_best_only=True,
                             ),
                         ])
     # find actual trained epochs
@@ -185,7 +185,7 @@ def single_train(max_seq_length=512,
     test_f1 = mean_labels(test_out_dict)
     print(test_out_dict)
     print(train_out_dict)
-    model.save(log_dir + 'best_model.h5')
+    model.save('best_model.h5')
     # write to log file
     with open(log_dir + "log.csv", "a") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
