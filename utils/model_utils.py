@@ -157,7 +157,7 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model (tensorflow.python.keras.engine.training.Model): final compiled
         model which can be used for fine-tuning
     """
-    config_dir = 'gs://sentargcdd/models_not_official'
+    config_dir = 'gs://fileread_cddnlp_testing/models_not_official'
     location = config_dir + '/model.ckpt-best'
 
     model_params = bert.albert_params(config_dir)
