@@ -185,6 +185,7 @@ def single_train(max_seq_length=512,
     test_f1 = mean_labels(test_out_dict)
     print(test_out_dict)
     print(train_out_dict)
+    model.save(log_dir + 'best_model.h5')
     # write to log file
     with open(log_dir + "log.csv", "a") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

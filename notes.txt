@@ -1,0 +1,1 @@
+pip install --use-deprecated=legacy-resolver -r requirements.txt

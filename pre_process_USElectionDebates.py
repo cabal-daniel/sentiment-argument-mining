@@ -18,6 +18,7 @@ from tqdm import tqdm
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from utils.arg_metav_formatter import *
+from typing import NamedTuple, List
 
 
 def read_us_election_corpus():
@@ -313,6 +314,110 @@ def initialize_bert_tokenizer():
     return Tokenizer
 
 
+class TSentence(NamedTuple):
+    input_ids: List[int]
+    label_ids: List[int]
+    output_mask: List[int]
+
+    @staticmethod
+    def read_training_data(instance_set):
+        input_ids_sub = ["[CLS]"]
+        label_ids_sub = ["[CLS]"]
+        output_mask_sub = [0]
+        for i in range(len(instance_set[1])):
+            input_ids_sub.extend(instance_set[1][i])
+            label_ids_sub.extend(instance_set[2][i])
+            output_mask_sub.extend([1] * len(instance_set[1][i]))
+        output_mask_sub.extend([0])
+        input_ids_sub.extend(["[SEP]"])
+        label_ids_sub.extend(["[SEP]"])
+        return TSentence(
+            input_ids=input_ids_sub,
+            label_ids=label_ids_sub,
+            output_mask=output_mask_sub,
+        )
+
+    @property
+    def length(self):
+        return len(self.input_ids)
+
+
+class TCollection:
+
+    def __init__(self, label_id_map, Tokenizer, max_seq_length = 512):
+        self.input_ids = []
+        self.label_ids = []
+        self.output_mask = []
+        self.label_id_map = label_id_map
+        self.max_seq_length = max_seq_length
+        self.Tokenizer = Tokenizer
+
+    def add_sentence(self, sentence: TSentence) -> None:
+        input_ids_sub = sentence.input_ids.copy()
+        label_ids_sub = sentence.label_ids.copy()
+        output_mask_sub = sentence.output_mask.copy()
+        input_ids_sub.extend(["<pad>"] * (self.max_seq_length - len(input_ids_sub)))
+        label_ids_sub.extend(["<pad>"] * (self.max_seq_length - len(label_ids_sub)))
+        output_mask_sub.extend([0] * (self.max_seq_length - len(output_mask_sub)))
+        input_ids_sub = self.Tokenizer.convert_tokens_to_ids(input_ids_sub)
+        label_ids_sub = [self.label_id_map[label] for label in label_ids_sub]
+        self.input_ids.append(input_ids_sub)
+        self.label_ids.append(label_ids_sub)
+        self.output_mask.append(output_mask_sub)
+
+    def result(self):
+        return np.array(self.input_ids), np.array(self.label_ids), np.array(self.output_mask)
+
+
+class TBuffer(NamedTuple):
+    sentences: List[TSentence]
+    max_seq_length: int
+
+    @staticmethod
+    def create(max_seq_length) -> None:
+        return TBuffer(
+            sentences=[],
+            max_seq_length=max_seq_length
+        )
+
+    def add_sentence(self, sentence: TSentence):
+        new_sentences = self.sentences.copy()
+        ready = False
+        if sentence.length > self.max_seq_length:
+            raise Exception(f'Sentence has size {sentence.length} max_seq_length is {self.max_seq_length}')
+        while sum(s.length for s in new_sentences) + sentence.length > self.max_seq_length:
+            new_sentences = new_sentences[1:]
+            ready = True        
+        completed_result = None
+        if ready:
+            completed_result = self.result()
+        new_sentences.append(sentence)
+        new_buffer = TBuffer(
+            sentences=new_sentences,
+            max_seq_length=self.max_seq_length
+        )
+        return new_buffer, completed_result
+
+    def result(self) -> TSentence:
+        input_ids = []
+        label_ids = []
+        output_mask = []
+        for sentence in self.sentences:
+            input_ids.extend(sentence.input_ids)
+            label_ids.extend(sentence.label_ids)
+            output_mask.extend(sentence.output_mask)
+        return TSentence(
+            input_ids=input_ids,
+            label_ids=label_ids,
+            output_mask=output_mask,
+        )
+
+
+    @property
+    def length(self):
+        return sum([s.length for s in self.sentences])
+
+
 def project_to_ids_US(Tokenizer, train_data, label_id_map, max_seq_length=512):
     """
     Function to map data to indices in the albert vocabulary, as well as
@@ -331,33 +436,15 @@ def project_to_ids_US(Tokenizer, train_data, label_id_map, max_seq_length=512):
         (np.ndarray): output mask indicating which token is relevant to outcome,
         this includes all corpus tokens and excludes all bert special tokens
     """
-    input_ids = []
-    label_ids = []
-    output_mask = []
+    collection = TCollection(Tokenizer=Tokenizer, max_seq_length=max_seq_length, label_id_map=label_id_map)
+    buffer = TBuffer.create(max_seq_length=max_seq_length)
     for instance_set in tqdm(train_data):
-        input_ids_sub = ["[CLS]"]
-        label_ids_sub = ["[CLS]"]
-        output_mask_sub = [0]
-        for i in range(len(instance_set[1])):
-            input_ids_sub.extend(instance_set[1][i])
-            label_ids_sub.extend(instance_set[2][i])
-            output_mask_sub.extend([1] * len(instance_set[1][i]))
-        output_mask_sub.extend([0])
-        input_ids_sub.extend(["[SEP]"])
-        label_ids_sub.extend(["[SEP]"])
-        assert (len(input_ids_sub) == len(label_ids_sub) ==
-                len(output_mask_sub))
-        input_ids_sub.extend(["<pad>"] * (max_seq_length - len(input_ids_sub)))
-        label_ids_sub.extend(["<pad>"] * (max_seq_length - len(label_ids_sub)))
-        output_mask_sub.extend([0] * (max_seq_length - len(output_mask_sub)))
-        assert (len(input_ids_sub) == len(label_ids_sub) ==
-                len(output_mask_sub) == max_seq_length)
-        input_ids_sub = Tokenizer.convert_tokens_to_ids(input_ids_sub)
-        label_ids_sub = [label_id_map[label] for label in label_ids_sub]
-        input_ids.append(input_ids_sub)
-        label_ids.append(label_ids_sub)
-        output_mask.append(output_mask_sub)
-    return np.array(input_ids), np.array(label_ids), np.array(output_mask)
+        t_sentence = TSentence.read_training_data(instance_set)
+        buffer, completed_result = buffer.add_sentence(t_sentence)
+        if completed_result:
+            collection.add_sentence(completed_result)
+    collection.add_sentence(buffer.result())
+    return collection.result()
 
 
 def summary_info_US(collection,
