@@ -1,2 +1,67 @@
 pip install --use-deprecated=legacy-resolver -r requirements.
 python pre_process_USElectionDebates.py --max-seq-length 512
+
+
+python train_USElectionDebates.py
+# result
+"""
+{'1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8698491004062682, 'recall': 0.7486130188914855, 'f1-score': 0.8046902714259692, 'support': 56057}, '4': {'precision': 0.669912909925476, 'recall': 0.7183441254631883, 'f1-score': 0.6932837236184989, 'support': 53434}, '5': {'precision': 0.6158372295744512, 'recall': 0.6680779728771304, 'f1-score': 0.6408947992371528, 'support': 46529}, 'accuracy': 0.7142289450070504, 'macro avg': {'precision': 0.5388998099765488, 'recall': 0.533758779307951, 'f1-score': 0.5347171985704052, 'support': 156020}, 'weighted avg': {'precision': 0.7256220222106249, 'recall': 0.7142289450070504, 'f1-score': 0.7176877268738746, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 32 --patience 8
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8116514348038663, 'recall': 0.769966284317748, 'f1-score': 0.7902595322012176, 'support': 56057}, '4': {'precision': 0.6432008992868936, 'recall': 0.685331436912827, 'f1-score': 0.6635981443896782, 'support': 53434}, '5': {'precision': 0.61, 'recall': 0.6004427346386125, 'f1-score': 0.6051836367771772, 'support': 46529}, 'accuracy': 0.6904243045763364, 'macro avg': {'precision': 0.4129704668181519, 'recall': 0.41114809117383755, 'f1-score': 0.4118082626736147, 'support': 156020}, 'weighted avg': {'precision': 0.6938227876765555, 'recall': 0.6904243045763364, 'f1-score': 0.6916861381843802, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 32 --patience 8 --model-type "1D_CNN" --max-epochs 250
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.7826145089200444, 'recall': 0.7309167454555184, 'f1-score': 0.7558827056295025, 'support': 56057}, '4': {'precision': 0.5907397249910159, 'recall': 0.5845154770370925, 'f1-score': 0.5876111189501905, 'support': 53434}, '5': {'precision': 0.539783627697237, 'recall': 0.5865589202432892, 'f1-score': 0.5622000205994439, 'support': 46529}, 'accuracy': 0.6377259325727471, 'macro avg': {'precision': 0.38262757232165945, 'recall': 0.38039822854718003, 'f1-score': 0.38113876903582733, 'support': 156020}, 'weighted avg': {'precision': 0.644482761215393, 'recall': 0.6377259325727471, 'f1-score': 0.6404918223171967, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 32 --patience 8 --grid-search --max-epochs 250
+# result
+"""
+killed
+"""
+
+python train_USElectionDebates.py --batch-size 24 --patience 8 --max-epochs 250
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.7952272596898484, 'recall': 0.7418877214264052, 'f1-score': 0.7676320209683076, 'support': 56057}, '4': {'precision': 0.5771432980939888, 'recall': 0.6998540255268181, 'f1-score': 0.632602830100906, 'support': 53434}, '5': {'precision': 0.5852328273732956, 'recall': 0.48889939607556576, 'f1-score': 0.5327462850853055, 'support': 46529}, 'accuracy': 0.6520446096654275, 'macro avg': {'precision': 0.39152067703142657, 'recall': 0.3861282286057578, 'f1-score': 0.3865962272309038, 'support': 156020}, 'weighted avg': {'precision': 0.6579119837946424, 'recall': 0.6520446096654275, 'f1-score': 0.6513382881795052, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 32 --patience 8 --model-type "Stacked_LSTM" --max-epochs 250
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.7940789344439424, 'recall': 0.7210696255596981, 'f1-score': 0.7558152580403888, 'support': 56057}, '4': {'precision': 0.5933605086138929, 'recall': 0.6619755212037279, 'f1-score': 0.6257928118393234, 'support': 53434}, '5': {'precision': 0.5697582243361078, 'recall': 0.5561047948591201, 'f1-score': 0.5628487214904887, 'support': 46529}, 'accuracy': 0.6516344058454044, 'macro avg': {'precision': 0.48929941684848577, 'recall': 0.48478748540563654, 'f1-score': 0.4861141978425502, 'support': 156020}, 'weighted avg': {'precision': 0.6584385890625151, 'recall': 0.6516344058454044, 'f1-score': 0.6537375797335178, 'support': 156020}}
+"""
+
+
+python train_USElectionDebates.py --batch-size 16 --patience 5 --max-epochs 250
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8313301667275629, 'recall': 0.7711793353194071, 'f1-score': 0.8001258583353383, 'support': 56057}, '4': {'precision': 0.6572954983359608, 'recall': 0.7022682187371336, 'f1-score': 0.6790380369874417, 'support': 53434}, '5': {'precision': 0.6138858689859521, 'recall': 0.618925831202046, 'f1-score': 0.6163955479452055, 'support': 46529}, 'accuracy': 0.7021727983591847, 'macro avg': {'precision': 0.4205023068098951, 'recall': 0.4184746770517174, 'f1-score': 0.4191118886535971, 'support': 156020}, 'weighted avg': {'precision': 0.7068792360747218, 'recall': 0.7021727983591847, 'f1-score': 0.7038625955610401, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py
+# result
+"""
+{'1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.851752239590706, 'recall': 0.7513780616158553, 'f1-score': 0.7984228684080829, 'support': 56057}, '4': {'precision': 0.6610798731257209, 'recall': 0.6864917468278624, 'f1-score': 0.6735462073777565, 'support': 53434}, '5': {'precision': 0.600105745505816, 'recall': 0.6586215048679318, 'f1-score': 0.6280034837850299, 'support': 46529}, 'accuracy': 0.7014933982822715, 'macro avg': {'precision': 0.5282344645555607, 'recall': 0.5241228283279125, 'f1-score': 0.5249931398927173, 'support': 156020}, 'weighted avg': {'precision': 0.7114032654017183, 'recall': 0.7014933982822715, 'f1-score': 0.7048316425869029, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 32
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8327021829212681, 'recall': 0.749219544392315, 'f1-score': 0.7887580520968317, 'support': 56057}, '4': {'precision': 0.6371825369061779, 'recall': 0.6817569337874761, 'f1-score': 0.6587165253241234, 'support': 53434}, '5': {'precision': 0.5914755056461207, 'recall': 0.6090180317651357, 'f1-score': 0.6001185963277494, 'support': 46529}, 'accuracy': 0.6843032944494296, 'macro avg': {'precision': 0.4122720450947133, 'recall': 0.40799890198898536, 'f1-score': 0.40951863474974093, 'support': 156020}, 'weighted avg': {'precision': 0.6938005495915305, 'recall': 0.6843032944494296, 'f1-score': 0.6879642809197228, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --model-type "1D_CNN"
+# result
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8239508122743683, 'recall': 0.7817221756426495, 'f1-score': 0.8022811947895022, 'support': 56057}, '4': {'precision': 0.6656074699992899, 'recall': 0.701706778455665, 'f1-score': 0.683180584151741, 'support': 53434}, '5': {'precision': 0.6181966754833021, 'recall': 0.6178512325646371, 'f1-score': 0.6180239057528593, 'support': 46529}, 'accuracy': 0.7054480194846815, 'macro avg': {'precision': 0.5269387394392401, 'recall': 0.525320046665738, 'f1-score': 0.5258714211735256, 'support': 156020}, 'weighted avg': {'precision': 0.7083601676013901, 'recall': 0.7054480194846815, 'f1-score': 0.7065413573942702, 'support': 156020}}
+"""
+
+python train_USElectionDebates.py --batch-size 12
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.82203663281769, 'recall': 0.7725886151595697, 'f1-score': 0.7965459528057235, 'support': 56057}, '4': {'precision': 0.6695608429133051, 'recall': 0.67253059849534, 'f1-score': 0.6710424349936978, 'support': 53434}, '5': {'precision': 0.6070694864048338, 'recall': 0.6477895506028498, 'f1-score': 0.6267688372721696, 'support': 46529}, 'accuracy': 0.701102422766312, 'macro avg': {'precision': 0.5246667405339572, 'recall': 0.5232271910644399, 'f1-score': 0.5235893062678977, 'support': 156020}, 'weighted avg': {'precision': 0.7057079716640259, 'recall': 0.701102422766312, 'f1-score': 0.7029315804212312, 'support': 156020}}
