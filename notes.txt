@@ -68,3 +68,19 @@ python train_USElectionDebates.py --batch-size 12
 
 python train_USElectionDebates.py --batch-size 8
 {'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.7062306223615757, 'recall': 0.7192322100718911, 'f1-score': 0.7126721227440651, 'support': 56057}, '4': {'precision': 0.529008109794136, 'recall': 0.5713216304225773, 'f1-score': 0.5493512803440644, 'support': 53434}, '5': {'precision': 0.5265132761810459, 'recall': 0.43426680134969586, 'f1-score': 0.4759616517089487, 'support': 46529}, 'accuracy': 0.5835918471990771, 'macro avg': {'precision': 0.3523504016673516, 'recall': 0.34496412836883283, 'f1-score': 0.34759701095941564, 'support': 156020}, 'weighted avg': {'precision': 0.5919390178431649, 'recall': 0.5835918471990771, 'f1-score': 0.5861448352194236, 'support': 156020}}
+
+python train_USElectionDebates.py --batch-size 32 --end-learn-rate 1e-07 --model-type 1D_CNN --warmup-epochs 25
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '2': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.6316496742718588, 'recall': 0.715746962825648, 'f1-score': 0.6710738671632526, 'support': 30209}, '4': {'precision': 0.5321097431220551, 'recall': 0.48036087955816265, 'f1-score': 0.504912831052698, 'support': 29151}, '5': {'precision': 0.4723598089509995, 'recall': 0.4392039146346478, 'f1-score': 0.45517887963179987, 'support': 24319}, 'accuracy': 0.5533765938885503, 'macro avg': {'precision': 0.27268653772415224, 'recall': 0.2725519595030764, 'f1-score': 0.27186092964129177, 'support': 83679}, 'weighted avg': {'precision': 0.5506800311393416, 'recall': 0.5533765938885503, 'f1-score': 0.5504449092952549, 'support': 83679}}
+
+python train_USElectionDebates.py --batch-size 16 --end-learn-rate 1e-07
+"""
+pretty good
+"""
+
+python train_USElectionDebates.py --batch-size 12 --end-learn-rate 1e-07  --warmup-epochs 25
+{'1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8343855357969194, 'recall': 0.7815325077399381, 'f1-score': 0.8070946702049431, 'support': 64600}, '4': {'precision': 0.6406573498964804, 'recall': 0.6865083295366757, 'f1-score': 0.6627908088621999, 'support': 50483}, '5': {'precision': 0.6157219460304366, 'recall': 0.6220555336228452, 'f1-score': 0.618872535649214, 'support': 45594}, 'accuracy': 0.70642344579498, 'macro avg': {'precision': 0.5226912079309591, 'recall': 0.5225240927248648, 'f1-score': 0.5221895036790892, 'support': 160677}, 'weighted avg': {'precision': 0.711469824645822, 'recall': 0.70642344579498, 'f1-score': 0.7083456779092218, 'support': 160677}}
+
+python train_USElectionDebates.py --batch-size 10 --end-learn-rate 5e-08  --warmup-epochs 30
+"""
+{'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8417750188742555, 'recall': 0.7766873065015479, 'f1-score': 0.8079223863773599, 'support': 64600}, '4': {'precision': 0.6417235201505637, 'recall': 0.702434482895232, 'f1-score': 0.6707079495375536, 'support': 50483}, '5': {'precision': 0.6098849520815596, 'recall': 0.6127341316839935, 'f1-score': 0.6113062220325817, 'support': 45594}, 'accuracy': 0.7068342077584222, 'macro avg': {'precision': 0.4186766982212758, 'recall': 0.4183711842161547, 'f1-score': 0.41798731158949903, 'support': 160677}, 'weighted avg': {'precision': 0.7131194209018368, 'recall': 0.7068342077584222, 'f1-score': 0.7090189103844066, 'support': 160677}}
+"""
