@@ -305,7 +305,7 @@ def initialize_bert_tokenizer():
     Returns:
         Tokenizer (bert.tokenization.albert_tokenization.FullTokenizer)
     """
-    model_name = "albert_large_v2"
+    model_name = "albert_xlarge_v2"
     model_dir = bert.fetch_google_albert_model(model_name, ".models")
     spm = os.path.join(model_dir, "30k-clean.model")
     vocab = os.path.join(model_dir, "30k-clean.vocab")

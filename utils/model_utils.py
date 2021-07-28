@@ -81,7 +81,7 @@ def fetch_bert_layer():
         l_bert (bert.model.BertModelLayer): BERT layer
         model_ckpt (str): path to best model checkpoint
     """
-    model_name = "albert_large_v2"
+    model_name = "albert_xlarge_v2"
     model_dir = bert.fetch_google_albert_model(model_name, ".models")
     model_ckpt = os.path.join(model_dir, "model.ckpt-best")
     model_params = bert.albert_params(model_dir)
