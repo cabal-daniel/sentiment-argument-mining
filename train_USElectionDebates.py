@@ -135,7 +135,7 @@ def single_train(max_seq_length=512,
         warmup_epoch_count=warmup_epoch_count,
         total_epoch_count=max_epochs)
     # train model
-    log_dir = 'gs://fileread_cddnlp_testing/train_0728/'
+    log_dir = 'gs://fileread_cddnlp_testing2/train_0728/'
     history = model.fit(x=train_X,
                         y=train_Y,
                         validation_split=0.15,
@@ -162,7 +162,7 @@ def single_train(max_seq_length=512,
                             #                 filepath=log_dir + "model_" + str(i) + ".h5",
                             #                 save_best_only=True),
                             ModelCheckpoint(
-                                filepath='gs://fileread_cddnlp_testing/single_train_0728',
+                                filepath='gs://fileread_cddnlp_testing2/single_train_0728',
                                 save_weights_only=False,
                                 monitor='val_loss',
                                 mode='min',
@@ -289,7 +289,7 @@ def grid_train(max_seq_length=512,
                 #                 filepath=log_dir + "model_" + str(i) + ".h5",
                 #                 save_best_only=True),
                 ModelCheckpoint(
-                    filepath='gs://fileread_cddnlp_testing/trained',
+                    filepath='gs://fileread_cddnlp_testing2/trained',
                     save_weights_only=False,
                     monitor='val_loss',
                     mode='max',

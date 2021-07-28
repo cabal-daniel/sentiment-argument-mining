@@ -1,3 +1,6 @@
+gcloud compute ssh mnist-tutorial --zone=us-central1-b
+
+
 sudo apt-get install -y python3-venv
 sudo apt-get install -y vim
 python3 -m venv .
@@ -92,3 +95,12 @@ python train_USElectionDebates.py --batch-size 10 --end-learn-rate 5e-08  --warm
 
 python train_USElectionDebates.py --batch-size 12 --end-learn-rate 5e-08  --warmup-epochs 30
 {'0': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '1': {'precision': 0.0, 'recall': 0.0, 'f1-score': 0.0, 'support': 0}, '3': {'precision': 0.8300939288276414, 'recall': 0.7702012383900929, 'f1-score': 0.79902681087852, 'support': 64600}, '4': {'precision': 0.6161563116817268, 'recall': 0.6740090723609928, 'f1-score': 0.6437855940060166, 'support': 50483}, '5': {'precision': 0.5931517988615634, 'recall': 0.5919419221827433, 'f1-score': 0.5925462429332017, 'support': 45594}, 'accuracy': 0.6893954953104676, 'macro avg': {'precision': 0.40788040787418633, 'recall': 0.4072304465867658, 'f1-score': 0.40707172956354765, 'support': 160677}, 'weighted avg': {'precision': 0.6956418778181593, 'recall': 0.6893954953104676, 'f1-score': 0.6916603715855694, 'support': 160677}}
+
+xlarge
+
+python train_USElectionDebates.py --batch-size 12 --end-learn-rate 5e-08  --warmup-epochs 30 --max-seq-length 256
+
+python train_USElectionDebates.py --batch-size 32 --end-learn-rate 5e-08  --warmup-epochs 15 --max-seq-length 128
+
+nohup python train_USElectionDebates.py --batch-size 16 --end-learn-rate 5e-08  --warmup-epochs 15 --max-seq-length 128
+
