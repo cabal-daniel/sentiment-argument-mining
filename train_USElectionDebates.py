@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 from glob import glob
 from sklearn.model_selection import ParameterGrid
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, CSVLogger, ModelCheckpoint
 from utils.model_utils import *
 from utils.arg_metav_formatter import *
 from pre_process_USElectionDebates import *
@@ -135,6 +135,7 @@ def single_train(max_seq_length=512,
         warmup_epoch_count=warmup_epoch_count,
         total_epoch_count=max_epochs)
     # train model
+    log_dir = 'gs://fileread_cddnlp_testing2/train_0728/'
     history = model.fit(x=train_X,
                         y=train_Y,
                         validation_split=0.15,
@@ -147,11 +148,28 @@ def single_train(max_seq_length=512,
                                           mode="min",
                                           patience=patience,
                                           restore_best_weights=True),
-                            ModelCheckpoint(monitor="val_loss",
-                                            mode="min",
-                                            filepath=log_dir + "model_0.h5",
-                                            save_best_only=True),
-                            CSVLogger(filename=log_dir + "model_history_0.csv")
+                            # ModelCheckpoint(monitor="val_loss",
+                            #                 mode="min",
+                            #                 filepath=log_dir + "model_0.h5",
+                            #                 save_best_only=True),
+                            # CSVLogger(filename=log_dir + "model_history_0.csv")
+                            # EarlyStopping(monitor="val_loss",
+                            #               mode="min",
+                            #               patience=patience,
+                            #               restore_best_weights=False),
+                            # ModelCheckpoint(monitor="val_loss",
+                            #                 mode="min",
+                            #                 filepath=log_dir + "model_" + str(i) + ".h5",
+                            #                 save_best_only=True),
+                            ModelCheckpoint(
+                                filepath='gs://fileread_cddnlp_testing2/single_train_0728',
+                                save_weights_only=False,
+                                monitor='val_loss',
+                                mode='min',
+                                # verbose=1,
+                                # save_freq=56 * 5,       
+                                save_best_only=True,
+                            ),
                         ])
     # find actual trained epochs
     train_epochs = len(history.history["val_loss"])
@@ -165,25 +183,27 @@ def single_train(max_seq_length=512,
     y_pred = np.argmax(y_pred, axis=-1)
     test_out_dict = class_report(test_Y, y_pred, label_threshold_less)
     test_f1 = mean_labels(test_out_dict)
+    from pprint import pprint
+    pprint(test_out_dict)
+    pprint({
+        "id": str(0),
+        "max_seq_length": str(max_seq_length),
+        "model_type": model_type,
+        "max_epochs": str(max_epochs),
+        "train_epochs": str(train_epochs),
+        "batch_size": str(batch_size),
+        "warmup_epoch_count": str(warmup_epoch_count),
+        "max_learn_rate": str(max_learn_rate),
+        "end_learn_rate": str(end_learn_rate),
+        "train_f1": str(train_f1),
+        "test_f1": str(test_f1),
+        "test_f1_N": str(test_out_dict["3"]["f1-score"]),
+        "test_f1_C": str(test_out_dict["4"]["f1-score"]),
+        "test_f1_P": str(test_out_dict["5"]["f1-score"])
+    })
+    pprint(train_out_dict)
+    model.save('best_model.h5')
     # write to log file
-    with open(log_dir + "log.csv", "a") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writerow({
-            "id": str(0),
-            "max_seq_length": str(max_seq_length),
-            "model_type": model_type,
-            "max_epochs": str(max_epochs),
-            "train_epochs": str(train_epochs),
-            "batch_size": str(batch_size),
-            "warmup_epoch_count": str(warmup_epoch_count),
-            "max_learn_rate": str(max_learn_rate),
-            "end_learn_rate": str(end_learn_rate),
-            "train_f1": str(train_f1),
-            "test_f1": str(test_f1),
-            "test_f1_N": str(test_out_dict["3"]["f1-score"]),
-            "test_f1_C": str(test_out_dict["4"]["f1-score"]),
-            "test_f1_P": str(test_out_dict["5"]["f1-score"])
-        })
 
 
 def grid_train(max_seq_length=512,
@@ -250,6 +270,7 @@ def grid_train(max_seq_length=512,
             warmup_epoch_count=warmup_epoch_count,
             total_epoch_count=max_epochs)
         # train model
+
         history = model.fit(
             x=train_X,
             y=train_Y,
@@ -261,12 +282,21 @@ def grid_train(max_seq_length=512,
                 LRScheduler,
                 EarlyStopping(monitor="val_loss",
                               mode="min",
-                              patience=patience,
-                              restore_best_weights=True),
-                ModelCheckpoint(monitor="val_loss",
-                                mode="min",
-                                filepath=log_dir + "model_" + str(i) + ".h5",
-                                save_best_only=True),
+                              patience=5,
+                              restore_best_weights=False),
+                # ModelCheckpoint(monitor="val_loss",
+                #                 mode="min",
+                #                 filepath=log_dir + "model_" + str(i) + ".h5",
+                #                 save_best_only=True),
+                ModelCheckpoint(
+                    filepath='gs://fileread_cddnlp_testing2/trained',
+                    save_weights_only=False,
+                    monitor='val_loss',
+                    mode='max',
+                    verbose=1,
+                    save_freq=56 * 5,       
+                    save_best_only=False,
+                ),
                 CSVLogger(filename=log_dir + "model_history_" + str(i) +
                           ".csv")
             ])
@@ -301,23 +331,39 @@ def grid_train(max_seq_length=512,
                 "test_f1_C": str(test_out_dict["4"]["f1-score"]),
                 "test_f1_P": str(test_out_dict["5"]["f1-score"])
             })
+        print({
+            "id": str(i),
+            "max_seq_length": str(max_seq_length),
+            "model_type": model_type,
+            "max_epochs": str(max_epochs),
+            "train_epochs": str(train_epochs),
+            "batch_size": str(batch_size),
+            "warmup_epoch_count": str(warmup_epoch_count),
+            "max_learn_rate": str(max_learn_rate),
+            "end_learn_rate": str(end_learn_rate),
+            "train_f1": str(train_f1),
+            "test_f1": str(test_f1),
+            "test_f1_N": str(test_out_dict["3"]["f1-score"]),
+            "test_f1_C": str(test_out_dict["4"]["f1-score"]),
+            "test_f1_P": str(test_out_dict["5"]["f1-score"])
+        })
         # clear memory
         del model
         # filter out best model and history
-        best_test = test_f1
-        if best_test >= record_test:
-            record_test = best_test
-            todel = [
-                el for el in glob(log_dir + "*")
-                if ('_' + str(i) + '.') not in el
-            ]
-            if len(todel) > 0:
-                for el in todel:
-                    if "log.csv" not in el:
-                        os.remove(el)
-        else:
-            os.remove(log_dir + "model_history_" + str(i) + ".csv")
-            os.remove(log_dir + "model_" + str(i) + ".h5")
+        # best_test = test_f1
+        # if best_test >= record_test:
+        #     record_test = best_test
+        #     todel = [
+        #         el for el in glob(log_dir + "*")
+        #         if ('_' + str(i) + '.') not in el
+        #     ]
+        #     if len(todel) > 0:
+        #         for el in todel:
+        #             if "log.csv" not in el:
+        #                 os.remove(el)
+        # else:
+        #     os.remove(log_dir + "model_history_" + str(i) + ".csv")
+        #     os.remove(log_dir + "model_" + str(i) + ".h5")
 
 
 if __name__ == "__main__":

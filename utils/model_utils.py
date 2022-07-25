@@ -72,6 +72,7 @@ def class_report(y_true, y_pred, greater_than_equal=3):
     return classification_report(y_true, y_pred, output_dict=True)
 
 
+
 def fetch_bert_layer():
     """
     Function to return ALBERT layer and weights
@@ -80,7 +81,7 @@ def fetch_bert_layer():
         l_bert (bert.model.BertModelLayer): BERT layer
         model_ckpt (str): path to best model checkpoint
     """
-    model_name = "albert_base_v2"
+    model_name = "albert_xlarge_v2"
     model_dir = bert.fetch_google_albert_model(model_name, ".models")
     model_ckpt = os.path.join(model_dir, "model.ckpt-best")
     model_params = bert.albert_params(model_dir)
@@ -127,6 +128,15 @@ def learning_rate_scheduler(max_learn_rate, end_learn_rate, warmup_epoch_count,
 
     return LearningRateScheduler(lr_scheduler, verbose=1)
 
+def get_strategy(tpu_address='mnist-tutorial'):
+    # When tpu_address is an empty string, we communicate with local TPUs.
+    cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
+        tpu=tpu_address
+    )
+    tf.config.experimental_connect_to_cluster(cluster_resolver)
+    tf.tpu.experimental.initialize_tpu_system(cluster_resolver)
+    return tf.distribute.experimental.TPUStrategy(cluster_resolver)
+
 
 def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
                  label_threshold_less, model_type):
@@ -147,41 +157,55 @@ def create_model(l_bert, model_ckpt, max_seq_len, num_labels,
         model (tensorflow.python.keras.engine.training.Model): final compiled
         model which can be used for fine-tuning
     """
-    input_ids = Input(shape=(max_seq_len, ), dtype='int32')
-    output = l_bert(input_ids)
-    if model_type == "TD_Dense":
-        output = TimeDistributed(Dense(512))(output)
-        output = Activation("relu")(output)
-        output = TimeDistributed(Dense(256))(output)
-        output = Activation("relu")(output)
-        output = TimeDistributed(Dense(128))(output)
-        output = Activation("relu")(output)
-        output = TimeDistributed(Dense(64))(output)
-        output = Activation("relu")(output)
-        output = TimeDistributed(Dense(num_labels))(output)
-    elif model_type == "1D_CNN":
-        output = Conv1D(512, 3, padding="same")(output)
-        output = Activation("relu")(output)
-        output = Conv1D(256, 3, padding="same")(output)
-        output = Activation("relu")(output)
-        output = Conv1D(128, 3, padding="same")(output)
-        output = Activation("relu")(output)
-        output = Conv1D(64, 3, padding="same")(output)
-        output = Activation("relu")(output)
-        output = Conv1D(num_labels, 3, padding="same")(output)
-    elif model_type == "Stacked_LSTM":
-        output = LSTM(512, return_sequences=True)(output)
-        output = LSTM(256, return_sequences=True)(output)
-        output = LSTM(128, return_sequences=True)(output)
-        output = TimeDistributed(Dense(64))(output)
-        output = Activation("relu")(output)
-        output = TimeDistributed(Dense(num_labels))(output)
-    prob = Activation("softmax")(output)
-    model = tf.keras.Model(inputs=input_ids, outputs=prob)
-    model.build(input_shape=(None, max_seq_len))
-    bert.load_albert_weights(l_bert, model_ckpt)
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                  metrics=[class_acc(label_threshold_less)])
+    config_dir = 'gs://fileread_cddnlp_testing2/model_xlarge'
+    location = config_dir + '/model.ckpt-best'
+
+    model_params = bert.albert_params(config_dir)
+    l_bert = bert.BertModelLayer.from_params(model_params, name="albert")
+
+    strategy = get_strategy()
+    with strategy.scope():
+        input_ids = Input(shape=(max_seq_len, ), dtype='int32')
+        output = l_bert(input_ids)
+        if model_type == "TD_Dense":
+            output = TimeDistributed(Dense(512))(output)
+            output = Activation("relu")(output)
+            output = TimeDistributed(Dense(256))(output)
+            output = Activation("relu")(output)
+            output = TimeDistributed(Dense(128))(output)
+            output = Activation("relu")(output)
+            output = TimeDistributed(Dense(64))(output)
+            output = Activation("relu")(output)
+            output = TimeDistributed(Dense(num_labels))(output)
+        elif model_type == "1D_CNN":
+            output = Conv1D(512, 3, padding="same")(output)
+            output = Activation("relu")(output)
+            output = Conv1D(256, 3, padding="same")(output)
+            output = Activation("relu")(output)
+            output = Conv1D(128, 3, padding="same")(output)
+            output = Activation("relu")(output)
+            output = Conv1D(64, 3, padding="same")(output)
+            output = Activation("relu")(output)
+            output = Conv1D(num_labels, 3, padding="same")(output)
+        elif model_type == "Stacked_LSTM":
+            output = LSTM(512, return_sequences=True)(output)
+            output = LSTM(256, return_sequences=True)(output)
+            output = LSTM(128, return_sequences=True)(output)
+            output = TimeDistributed(Dense(64))(output)
+            output = Activation("relu")(output)
+            output = TimeDistributed(Dense(num_labels))(output)
+        
+        prob = Activation("softmax")(output)
+        model = tf.keras.Model(inputs=input_ids, outputs=prob)
+        model.build(input_shape=(None, max_seq_len))
+        # tf.train.load_checkpoint(location)
+        # checkpoint = tf.train.Checkpoint(model=model)
+        # result = checkpoint.restore(location)
+        # result.assert_existing_objects_matched()
+
+        bert.load_albert_weights(l_bert, model_ckpt)
+        model.compile(optimizer=tf.keras.optimizers.Adam(),
+                      loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                      metrics=[class_acc(label_threshold_less)])
     model.summary()
     return model

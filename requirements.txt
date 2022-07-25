@@ -15,7 +15,7 @@ h5py==2.10.0
 idna==2.9; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
 joblib==0.14.1; python_version >= "3.5"
 keras-applications==1.0.8
-keras-preprocessing==1.1.0
+keras-preprocessing
 kiwisolver==1.1.0; python_version >= "3.6" and python_full_version < "3.0.0" or python_full_version >= "3.4.0" and python_version >= "3.6"
 markdown==3.2.1; python_version >= "3.5" and python_full_version < "3.0.0" or python_full_version >= "3.2.0" and python_version >= "3.5"
 matplotlib==3.2.1; python_version >= "3.6"
@@ -42,8 +42,9 @@ seaborn==0.10.0; python_version >= "3.6"
 sentencepiece==0.1.85
 six==1.14.0; python_full_version >= "3.6.1" and python_version >= "3.6"
 tensorboard==2.0.2; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.2.0"
-tensorflow-estimator==2.0.1
-tensorflow-gpu==2.0.3
+tensorflow-estimator
+tensorflow==2.3.1
+tf-models-official==2.3.0
 termcolor==1.1.0
 textblob==0.15.3
 tqdm==4.43.0; (python_version >= "2.6" and python_full_version < "3.0.0") or (python_full_version >= "3.2.0")
@@ -51,3 +52,4 @@ urllib3==1.25.8; python_version >= "2.7" and python_full_version < "3.0.0" or py
 vadersentiment==3.3.1
 werkzeug==1.0.0; python_version >= "2.7" and python_full_version < "3.0.0" or python_full_version >= "3.5.0"
 wrapt==1.12.1
+cloud-tpu-client
